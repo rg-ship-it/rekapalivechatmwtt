@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -418,7 +419,6 @@
         </div>
         <div class="actions">
           <button class="btn green" id="saveBtn">Simpan Data</button>
-          <button class="btn red" id="resetBtn">Reset Bulan</button>
         </div>
 
         <div class="category-settings">
@@ -578,7 +578,9 @@ function contrastText(hex){
   return ((r*299+g*587+b*114)/1000)>155?'#111827':'#ffffff';
 }
 function fillCategories(){
-  el('categoryInput').innerHTML = Object.keys(categories).map(x=>{const c=categoryColor(x);return `<option value="${esc(x)}" style="background:${c};color:${contrastText(c)}">${esc(x)}</option>`}).join('');
+  const categorySelect = el('categoryInput');
+  categorySelect.innerHTML = Object.keys(categories).map(x=>{const c=categoryColor(x);return `<option value="${esc(x)}" style="background:${c};color:${contrastText(c)}">${esc(x)}</option>`}).join('');
+  categorySelect.value = Object.prototype.hasOwnProperty.call(categories,'MENTAL') ? 'MENTAL' : Object.keys(categories)[0] || '';
   updatePreview();
 }
 function renderSettings(){
@@ -595,7 +597,6 @@ function renderStaffSettings(){
 function bind(){
   el('categoryInput').addEventListener('change',updatePreview);
   el('saveBtn').addEventListener('click',saveRecord);
-  el('resetBtn').addEventListener('click',resetMonthData);
   el('saveSettings').addEventListener('click',saveCategorySettings);
   el('addStaffBtn').addEventListener('click',addStaff);
   el('saveStaffBtn').addEventListener('click',saveStaffChanges);
@@ -639,19 +640,8 @@ function resetForm(){
   el('proofInput').value='';
   el('dateInput').value=isoLocal(new Date());
   el('saveBtn').textContent='Simpan Data';
+  el('categoryInput').value = Object.prototype.hasOwnProperty.call(categories,'MENTAL') ? 'MENTAL' : Object.keys(categories)[0] || '';
   updatePreview();
-}
-function resetMonthData(){
-  const monthText=monthName(viewDate);
-  if(!confirm(`Hapus seluruh data dan total untuk ${monthText}? Tindakan ini tidak bisa dibatalkan.`)) return;
-  const y=viewDate.getFullYear(), m=viewDate.getMonth();
-  records=records.filter(r=>{
-    const d=new Date(r.date+'T00:00:00');
-    return !(d.getFullYear()===y && d.getMonth()===m);
-  });
-  saveRecords();
-  resetForm();
-  renderAll();
 }
 function saveCategorySettings(){
   const names=[...document.querySelectorAll('[data-key-name]')]; const values=[...document.querySelectorAll('[data-key-value]')];
