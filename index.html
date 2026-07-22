@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rekap Mental Chat Mawartoto</title>
+  <style>
+    :root{
+      --red:#a40000;
+      --red2:#d30000;
+      --dark:#111827;
+      --line:#cbd5e1;
+      --soft:#f8fafc;
+      --blue:#075985;
+      --green:#0f8a4b;
+      --gold:#d99a00;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter,Segoe UI,Arial,sans-serif;
+      color:#111827;
+      background-image:url('https://mariterbang.io/download/LFVvAEcj.jpg');
+      background-size:cover;
+      background-position:center;
+      background-repeat:no-repeat;
+      background-attachment:fixed;
+      min-height:100vh;
+      position:relative;
+    }
+    body::before{
+      content:'';
+      position:fixed;
+      inset:0;
+      background:
+        linear-gradient(rgba(255,255,255,.80), rgba(255,255,255,.82)),
+        radial-gradient(circle at top left, rgba(164,0,0,.16), transparent 33%);
+      pointer-events:none;
+      z-index:0;
+    }
+    .app{max-width:1800px;margin:auto;padding:18px;position:relative;z-index:1}
+    .topbar{
+      background:linear-gradient(90deg,#8b0000,#c50000 55%,#8b0000);
+      color:#fff;border-radius:18px;padding:18px 22px;
+      display:flex;align-items:center;justify-content:space-between;gap:16px;
+      box-shadow:0 16px 36px rgba(90,0,0,.24);
+      position:relative;top:auto;z-index:10;
+    }
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{
+      width:54px;height:54px;border-radius:15px;background:#fff;
+      display:grid;place-items:center;overflow:hidden;
+      box-shadow:inset 0 0 0 3px rgba(164,0,0,.12)
+    }
+    .logo img{
+      width:100%;height:100%;object-fit:contain;display:block;padding:4px;
+    }
+    .brand h1{font-size:22px;margin:0;letter-spacing:.5px}
+    .brand p{margin:3px 0 0;opacity:.86;font-size:13px}
+    .month-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    button,input,select{font:inherit}
+    button{border:0;cursor:pointer}
+    .btn{
+      border-radius:10px;padding:10px 13px;font-weight:700;background:#fff;color:#8b0000;
+      box-shadow:0 3px 10px rgba(0,0,0,.12)
+    }
+    .btn.dark{background:#111827;color:#fff}
+    .btn.green{background:#087443;color:#fff}
+    .btn.red{background:#b60000;color:#fff}
+    .month-label{min-width:175px;text-align:center;font-weight:900;font-size:17px}
+
+    .layout{display:grid;grid-template-columns:470px 1fr;gap:16px;margin-top:18px}
+    .card{background:rgba(255,255,255,.96);border:1px solid #e5e7eb;border-radius:16px;box-shadow:0 12px 28px rgba(15,23,42,.08);overflow:hidden}
+    .card-head{padding:14px 16px;background:linear-gradient(90deg,#111827,#26364f);color:#fff;font-weight:900;display:flex;align-items:center;justify-content:space-between}
+    .card-body{padding:15px}
+
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+    .field{display:flex;flex-direction:column;gap:6px}
+    .field.full{grid-column:1/-1}
+    label{font-size:12px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:.45px}
+    input,select{
+      width:100%;border:1px solid #cbd5e1;border-radius:10px;padding:11px 12px;background:#fff;outline:none
+    }
+    input:focus,select:focus{border-color:#b60000;box-shadow:0 0 0 3px rgba(182,0,0,.11)}
+    .amount-preview{padding:12px;border-radius:11px;background:#fff1f2;border:1px dashed #e11d48;font-weight:900;color:#b00000;text-align:center}
+    .actions{display:flex;gap:8px;margin-top:12px}
+    .actions button{flex:1}
+
+    .category-settings,.staff-settings{margin-top:16px;border-top:1px dashed #cbd5e1;padding-top:14px}
+    .setting-row{display:grid;grid-template-columns:1fr 135px;gap:8px;margin-bottom:8px;padding:5px;border-radius:10px;border:1px solid rgba(15,23,42,.12)}
+    .staff-row{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:8px}
+    .staff-row input{font-weight:800;text-transform:uppercase}
+    .staff-add{display:grid;grid-template-columns:1fr auto;gap:8px;margin:10px 0}
+    .staff-list-box{max-height:280px;overflow:auto;padding-right:3px}
+    .setting-row input{padding:9px;background:rgba(255,255,255,.88);font-weight:800}
+    #categoryInput{font-weight:900;transition:.2s ease}
+    #categoryInput option{font-weight:800;color:#111827}
+    .tiny{font-size:12px;color:#64748b;line-height:1.5}
+
+    .stats{display:grid;grid-template-columns:repeat(4,minmax(140px,1fr));gap:10px;margin-bottom:12px}
+    .stat{
+      position:relative;
+      isolation:isolate;
+      overflow:hidden;
+      padding:15px 16px;
+      border-radius:15px;
+      border:1px solid rgba(147,197,253,.9);
+      background:
+        linear-gradient(120deg,rgba(255,255,255,.18),transparent 28%,rgba(255,255,255,.12) 52%,transparent 72%),
+        linear-gradient(135deg,#031a35 0%,#075985 24%,#0ea5e9 48%,#1d4ed8 68%,#020617 100%);
+      background-size:220% 220%,100% 100%;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.55),
+        inset 0 -12px 25px rgba(2,6,23,.28),
+        0 8px 20px rgba(3,105,161,.30),
+        0 0 0 1px rgba(255,255,255,.12);
+      animation:metallicFlow 5s ease-in-out infinite;
+      transition:transform .25s ease,box-shadow .25s ease;
+    }
+    .stat::before{
+      content:'';
+      position:absolute;
+      inset:-70% -35%;
+      z-index:-1;
+      background:linear-gradient(105deg,transparent 42%,rgba(255,255,255,.55) 49%,rgba(125,211,252,.35) 53%,transparent 60%);
+      transform:translateX(-65%) rotate(5deg);
+      animation:metallicShine 4.2s linear infinite;
+    }
+    .stat::after{
+      content:'';
+      position:absolute;
+      right:10px;
+      bottom:7px;
+      width:48px;
+      height:48px;
+      opacity:.16;
+      background:url('https://mawartt.sgp1.cdn.digitaloceanspaces.com/faviconmawar3.png') center/contain no-repeat;
+      filter:drop-shadow(0 0 5px rgba(255,255,255,.75));
+      z-index:-1;
+    }
+    .stat:hover{
+      transform:translateY(-3px) scale(1.01);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 12px 28px rgba(14,165,233,.42),0 0 22px rgba(56,189,248,.35);
+    }
+    .stat .k{font-size:12px;color:#dbeafe;font-weight:900;text-transform:uppercase;letter-spacing:.45px;text-shadow:0 1px 3px rgba(0,0,0,.45)}
+    .stat .v{font-size:23px;font-weight:950;margin-top:5px;color:#ffffff;text-shadow:0 2px 5px rgba(0,0,0,.55),0 0 10px rgba(125,211,252,.4)}
+    @keyframes metallicFlow{
+      0%,100%{background-position:0% 50%,center}
+      50%{background-position:100% 50%,center}
+    }
+    @keyframes metallicShine{
+      0%{transform:translateX(-80%) rotate(5deg)}
+      58%,100%{transform:translateX(85%) rotate(5deg)}
+    }
+    @media (prefers-reduced-motion:reduce){.stat,.stat::before{animation:none}}
+
+    .tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}
+    .tab{padding:9px 12px;border-radius:999px;background:#e2e8f0;font-weight:800;color:#334155}
+    .tab.active{background:#a40000;color:#fff}
+    .panel{display:none}.panel.active{display:block}
+
+    /* Area rekap dibuat lebih panjang ke bawah */
+    .table-wrap{
+      overflow:auto;
+      border:1px solid #cbd5e1;
+      border-radius:12px;
+      height:1100px;
+      min-height:1100px;
+      max-height:none;
+    }
+    #records .table-wrap{height:1100px;min-height:1100px}
+    @media(max-width:1100px){
+      .table-wrap,#records .table-wrap{height:900px;min-height:900px}
+    }
+    @media(max-width:600px){
+      .table-wrap,#records .table-wrap{height:760px;min-height:760px}
+    }
+    table{border-collapse:separate;border-spacing:0;width:max-content;min-width:100%;font-size:12px}
+    th,td{border-right:1px solid #b8c2cc;border-bottom:1px solid #b8c2cc;padding:8px 9px;text-align:center;background:#fff;white-space:nowrap}
+    th{position:sticky;top:0;background:#eef2f7;font-weight:900;z-index:5}
+    th:first-child,td:first-child{position:sticky;left:0;z-index:4;background:#dceaf0;text-align:left;font-weight:800;min-width:205px}
+    th:first-child{z-index:7;background:#9d0000;color:white}
+    th:last-child,td:last-child{position:sticky;right:0;z-index:4;font-weight:950;background:#fff5f5;min-width:120px}
+    th:last-child{z-index:7;background:#111827;color:#fff}
+    td.money{color:#e00000;font-weight:900}
+    tr:hover td{background:#fffbea}
+    tr:hover td:first-child{background:#d3e6ee}
+
+    .record-table{width:100%;font-size:12px}
+    .record-table th,.record-table td{position:static;min-width:auto;text-align:left}
+    .record-table td:nth-child(5){text-align:right;color:#d00000;font-weight:900}
+    .pill{display:inline-block;padding:5px 9px;border-radius:999px;color:#111827;font-size:11px;font-weight:900;border:1px solid rgba(15,23,42,.14)}
+    .category-cell{font-weight:900}
+    .icon-btn{padding:6px 8px;border-radius:7px;background:#e5e7eb}
+    .empty{padding:28px;text-align:center;color:#64748b}
+
+    .footer-note{margin:14px 2px;color:#64748b;font-size:12px;text-align:center}
+    @media(max-width:1100px){.layout{grid-template-columns:1fr}.topbar{position:static}.stats{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:600px){.app{padding:8px}.topbar{border-radius:12px;align-items:flex-start;flex-direction:column}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.stats{grid-template-columns:1fr 1fr}.brand h1{font-size:18px}.month-label{min-width:130px}}
+  
+
+    /* PANEL INPUT: MERAH METALLIC */
+    .layout > .card:first-child{
+      position:relative;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.32);
+      background:
+        linear-gradient(145deg,rgba(255,255,255,.18),transparent 28%),
+        linear-gradient(135deg,#4b0000 0%,#8f0000 22%,#d00606 46%,#6e0000 72%,#b90000 100%);
+      box-shadow:
+        0 18px 40px rgba(77,0,0,.34),
+        inset 0 1px 0 rgba(255,255,255,.32),
+        inset 0 -1px 0 rgba(40,0,0,.55);
+    }
+    .layout > .card:first-child::before{
+      content:'';
+      position:absolute;
+      inset:-35% -80%;
+      background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.25) 48%,rgba(255,255,255,.06) 55%,transparent 64%);
+      transform:translateX(-35%);
+      animation:redMetalShine 7s ease-in-out infinite;
+      pointer-events:none;
+      z-index:0;
+    }
+    @keyframes redMetalShine{
+      0%,18%{transform:translateX(-38%)}
+      55%,100%{transform:translateX(38%)}
+    }
+    .layout > .card:first-child > *{position:relative;z-index:1}
+    .layout > .card:first-child .card-head{
+      background:
+        linear-gradient(180deg,rgba(255,255,255,.18),transparent 44%),
+        linear-gradient(100deg,#420000,#9f0000 38%,#e00000 58%,#720000 82%,#3b0000);
+      border-bottom:1px solid rgba(255,255,255,.25);
+      text-shadow:0 1px 2px rgba(0,0,0,.65);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 5px 15px rgba(45,0,0,.24);
+    }
+    .layout > .card:first-child .card-body{
+      background:linear-gradient(180deg,rgba(255,255,255,.93),rgba(255,244,244,.91));
+      backdrop-filter:blur(5px);
+    }
+    .layout > .card:first-child .field,
+    .layout > .card:first-child .category-settings,
+    .layout > .card:first-child .staff-settings{
+      position:relative;
+    }
+    .layout > .card:first-child input,
+    .layout > .card:first-child select{
+      border-color:#d7a5a5;
+      box-shadow:inset 0 1px 2px rgba(74,0,0,.08);
+    }
+    .layout > .card:first-child input:focus,
+    .layout > .card:first-child select:focus{
+      border-color:#c00000;
+      box-shadow:0 0 0 3px rgba(192,0,0,.15),inset 0 1px 2px rgba(74,0,0,.08);
+    }
+    .layout > .card:first-child .category-settings,
+    .layout > .card:first-child .staff-settings{
+      border-top-color:rgba(130,0,0,.25);
+    }
+    .layout > .card:first-child .btn.dark{
+      background:linear-gradient(180deg,#860000,#3d0000);
+      color:#fff;
+      border:1px solid rgba(255,255,255,.15);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 4px 10px rgba(65,0,0,.22);
+    }
+    .layout > .card:first-child .btn.green{
+      background:linear-gradient(180deg,#0e9b59,#056a3a);
+    }
+    .layout > .card:first-child .btn.red{
+      background:linear-gradient(180deg,#ef1010,#9d0000);
+    }
+    .layout > .card:first-child label,
+    .layout > .card:first-child .tiny{color:#5f2626}
+
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo"><img src="https://mawartt.sgp1.cdn.digitaloceanspaces.com/faviconmawar3.png" alt="Logo Mawartoto"></div>
+      <div><h1>MAWARTOTO — REKAP MENTAL CHAT</h1><p>Input otomatis • rekap nama • per 10 hari • bulanan</p></div>
+    </div>
+    <div class="month-controls">
+      <button class="btn" id="prevMonth">◀</button>
+      <div class="month-label" id="monthLabel"></div>
+      <button class="btn" id="nextMonth">▶</button>
+      <button class="btn dark" id="todayBtn">Bulan Ini</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="card">
+      <div class="card-head"><span>INPUT DATA MISTAKE</span><span id="editingBadge"></span></div>
+      <div class="card-body">
+        <div class="form-grid">
+          <div class="field"><label>Tanggal</label><input type="date" id="dateInput"></div>
+          <div class="field"><label>Nama Staff</label><input id="nameInput" list="staffList" placeholder="Ketik/pilih nama"><datalist id="staffList"></datalist></div>
+          <div class="field full"><label>Keterangan</label><select id="categoryInput"></select></div>
+          <div class="field full"><label>Bukti / Link</label><input id="proofInput" placeholder="https://... atau catatan bukti"></div>
+          <div class="field full"><label>Nominal Otomatis</label><div class="amount-preview" id="amountPreview">Rp0</div></div>
+        </div>
+        <div class="actions">
+          <button class="btn green" id="saveBtn">Simpan Data</button>
+          <button class="btn red" id="resetBtn">Reset Bulan</button>
+        </div>
+
+        <div class="category-settings">
+          <div style="font-weight:900;margin-bottom:8px">PENGATURAN NOMINAL</div>
+          <div id="settingsBox"></div>
+          <button class="btn dark" id="saveSettings" style="width:100%;margin-top:5px">Simpan Nominal</button>
+          <p class="tiny">Nominal kategori dapat diubah. Setelah disimpan, input berikutnya langsung memakai nominal baru.</p>
+        </div>
+
+        <div class="staff-settings">
+          <div style="font-weight:900;margin-bottom:8px">PENGATURAN NAMA STAFF</div>
+          <div class="staff-add">
+            <input id="newStaffInput" placeholder="Ketik nama staff baru">
+            <button class="btn green" id="addStaffBtn">Tambah</button>
+          </div>
+          <div class="staff-list-box" id="staffSettingsBox"></div>
+          <button class="btn dark" id="saveStaffBtn" style="width:100%;margin-top:5px">Simpan Perubahan Nama</button>
+          <p class="tiny">Nama dapat diedit langsung. Tombol Hapus menghilangkan nama dari daftar pilihan, tetapi data laporan lama tetap aman.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="stats">
+        <div class="stat"><div class="k">Total Bulanan</div><div class="v" id="statMonthly">Rp0</div></div>
+        <div class="stat"><div class="k">Tanggal 1–10</div><div class="v" id="statP1">Rp0</div></div>
+        <div class="stat"><div class="k">Tanggal 11–20</div><div class="v" id="statP2">Rp0</div></div>
+        <div class="stat"><div class="k">Tanggal 21–Akhir</div><div class="v" id="statP3">Rp0</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><span>REKAP OTOMATIS</span><button class="btn" id="exportBtn">Export CSV</button></div>
+        <div class="card-body">
+          <div class="tabs">
+            <button class="tab active" data-tab="monthly">Rekap Bulanan</button>
+            <button class="tab" data-tab="p1">Tanggal 1–10</button>
+            <button class="tab" data-tab="p2">Tanggal 11–20</button>
+            <button class="tab" data-tab="p3">Tanggal 21–Akhir</button>
+            <button class="tab" data-tab="records">Data Input</button>
+          </div>
+          <div class="panel active" id="monthly"></div>
+          <div class="panel" id="p1"></div>
+          <div class="panel" id="p2"></div>
+          <div class="panel" id="p3"></div>
+          <div class="panel" id="records"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <div class="footer-note">Data tersimpan online dan tersinkron langsung melalui Firebase Realtime Database.</div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
+
+/* ============================================================
+   MASUKKAN FIREBASE CONFIG ANDA DI BAGIAN INI
+   Ambil dari Firebase Console > Project settings > Your apps
+   ============================================================ */
+const firebaseConfig = {
+  apiKey: "MASUKKAN_API_KEY",
+  authDomain: "MASUKKAN_PROJECT_ID.firebaseapp.com",
+  databaseURL: "https://MASUKKAN_PROJECT_ID-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "MASUKKAN_PROJECT_ID",
+  storageBucket: "MASUKKAN_PROJECT_ID.firebasestorage.app",
+  messagingSenderId: "MASUKKAN_MESSAGING_SENDER_ID",
+  appId: "MASUKKAN_APP_ID"
+};
+
+const FIREBASE_PATH = "mawartoto_rekap_mental";
+let database = null;
+let firebaseReady = false;
+let receivedFirstSnapshot = false;
+
+const INITIAL_STAFF = [
+  'BERNANDO NAINGGOLAN','MHD BAGUS KURNIAWAN','ANDRE SAHPUTRA SILALAHI','LUSIANA',
+  'RISKY VALENTA GINTING','RAKA ERLANDA ZIBRAN','MIKAEL DEFRAN SINAGA','ARMADEO NASUTION',
+  'RAMADHAN SYAHPUTRA','RAGEL AULIADI NATA','RONALDO SEMBIRING','ABED NEGO MEHA',
+  'FATHI SAHIB MAREKAR','SUTANTO SETIAWAN','YOGI MARULITUA GULTOM','ARIESYAH ANGKAT',
+  'JOHARI EGAN SEMBIRING','MULIA RAJAB','RIDO ARMANDA SITEPU','ITA ROSITA','RAHMAT SYAHPUTRA',
+  'FELIX LIM','REZA APRILYANTO','QRIS HASEBUL','QRIS ILHAM SIREGAR','QRIS PADLE TANJUNG'
+];
+let staffNames = [...INITIAL_STAFF];
+const DEFAULT_CATEGORIES = {
+  'MENTAL':100000,
+  'MISSCHAT':500000,
+  'ASAL TUTUP CHAT TANPA MENYELESAIKAN KENDALA':200000,
+  'Asal-asal balas chat member':200000,
+  'MISS SLOW RESPON BOT PATROL':500000,
+  'TRANSFER CHAT':500000
+};
+let categories = {...DEFAULT_CATEGORIES};
+let records = [];
+let viewDate = new Date();
+let editingId = null;
+
+const el = id => document.getElementById(id);
+const money = n => new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n)||0);
+const isoLocal = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const daysInMonth = (y,m) => new Date(y,m+1,0).getDate();
+const monthName = d => new Intl.DateTimeFormat('id-ID',{month:'long',year:'numeric'}).format(d);
+const esc = s => String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+
+function initUI(){
+  el('dateInput').value = isoLocal(new Date());
+  fillStaff(); fillCategories(); renderSettings(); renderStaffSettings(); bind(); renderAll();
+}
+function fillStaff(){ el('staffList').innerHTML = staffNames.slice().sort().map(x=>`<option value="${esc(x)}">`).join(''); }
+const CATEGORY_PALETTE = ['#bfdbfe','#fecaca','#fde68a','#ddd6fe','#bbf7d0','#fed7aa','#fbcfe8','#a7f3d0','#bae6fd','#e9d5ff','#fef3c7','#c7d2fe'];
+function categoryColor(name){
+  let hash=0;
+  for(const ch of String(name)) hash=((hash<<5)-hash)+ch.charCodeAt(0);
+  return CATEGORY_PALETTE[Math.abs(hash)%CATEGORY_PALETTE.length];
+}
+function contrastText(hex){
+  const c=hex.replace('#','');
+  const r=parseInt(c.slice(0,2),16),g=parseInt(c.slice(2,4),16),b=parseInt(c.slice(4,6),16);
+  return ((r*299+g*587+b*114)/1000)>155?'#111827':'#ffffff';
+}
+function fillCategories(){
+  el('categoryInput').innerHTML = Object.keys(categories).map(x=>{const c=categoryColor(x);return `<option value="${esc(x)}" style="background:${c};color:${contrastText(c)}">${esc(x)}</option>`}).join('');
+  updatePreview();
+}
+function renderSettings(){
+  el('settingsBox').innerHTML = Object.entries(categories).map(([k,v],i)=>{const c=categoryColor(k);return `
+    <div class="setting-row" style="background:${c}"><input value="${esc(k)}" data-key-name="${i}"><input type="number" min="0" step="1000" value="${v}" data-key-value="${i}"></div>`}).join('');
+}
+function renderStaffSettings(){
+  el('staffSettingsBox').innerHTML = staffNames.map((name,i)=>`
+    <div class="staff-row">
+      <input value="${esc(name)}" data-staff-index="${i}" data-original-name="${esc(name)}">
+      <button class="btn red" type="button" onclick="removeStaff(${i})">Hapus</button>
+    </div>`).join('') || '<div class="empty">Belum ada nama staff.</div>';
+}
+function bind(){
+  el('categoryInput').addEventListener('change',updatePreview);
+  el('saveBtn').addEventListener('click',saveRecord);
+  el('resetBtn').addEventListener('click',resetMonthData);
+  el('saveSettings').addEventListener('click',saveCategorySettings);
+  el('addStaffBtn').addEventListener('click',addStaff);
+  el('saveStaffBtn').addEventListener('click',saveStaffChanges);
+  el('newStaffInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addStaff();}});
+  el('prevMonth').addEventListener('click',()=>{viewDate.setMonth(viewDate.getMonth()-1);renderAll()});
+  el('nextMonth').addEventListener('click',()=>{viewDate.setMonth(viewDate.getMonth()+1);renderAll()});
+  el('todayBtn').addEventListener('click',()=>{viewDate=new Date();renderAll()});
+  el('exportBtn').addEventListener('click',exportCSV);
+  document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active'); el(b.dataset.tab).classList.add('active');
+  }));
+}
+function updatePreview(){
+  const name=el('categoryInput').value;
+  const c=categoryColor(name);
+  el('amountPreview').textContent = money(categories[name]||0);
+  el('categoryInput').style.background=c;
+  el('categoryInput').style.color=contrastText(c);
+  el('categoryInput').style.borderColor=c;
+  el('amountPreview').style.background=c;
+  el('amountPreview').style.color=contrastText(c);
+  el('amountPreview').style.borderColor=c;
+}
+function saveRecord(){
+  const date=el('dateInput').value, name=el('nameInput').value.trim().toUpperCase(), category=el('categoryInput').value, proof=el('proofInput').value.trim();
+  if(!date||!name||!category){alert('Tanggal, nama staff, dan keterangan wajib diisi.');return}
+  const row={id:editingId||Date.now(),date,name,category,proof,amount:Number(categories[category]||0)};
+  if(editingId){ records=records.map(r=>r.id===editingId?row:r); }
+  else records.push(row);
+  records.sort((a,b)=>a.date.localeCompare(b.date)||a.name.localeCompare(b.name));
+  saveRecords();
+  const d=new Date(date+'T00:00:00'); viewDate=new Date(d.getFullYear(),d.getMonth(),1);
+  resetForm(); renderAll();
+}
+function resetForm(){
+  editingId=null;
+  el('editingBadge').textContent='';
+  el('nameInput').value='';
+  el('proofInput').value='';
+  el('dateInput').value=isoLocal(new Date());
+  el('saveBtn').textContent='Simpan Data';
+  updatePreview();
+}
+function resetMonthData(){
+  const monthText=monthName(viewDate);
+  if(!confirm(`Hapus seluruh data dan total untuk ${monthText}? Tindakan ini tidak bisa dibatalkan.`)) return;
+  const y=viewDate.getFullYear(), m=viewDate.getMonth();
+  records=records.filter(r=>{
+    const d=new Date(r.date+'T00:00:00');
+    return !(d.getFullYear()===y && d.getMonth()===m);
+  });
+  saveRecords();
+  resetForm();
+  renderAll();
+}
+function saveCategorySettings(){
+  const names=[...document.querySelectorAll('[data-key-name]')]; const values=[...document.querySelectorAll('[data-key-value]')];
+  const next={};
+  names.forEach((n,i)=>{const key=n.value.trim();if(key)next[key]=Number(values[i].value)||0});
+  categories=next;saveCategories();fillCategories();renderSettings();alert('Nominal berhasil disimpan ke Firebase.');
+}
+function addStaff(){
+  const input=el('newStaffInput');
+  const name=input.value.trim().toUpperCase();
+  if(!name){alert('Ketik nama staff terlebih dahulu.');return}
+  if(staffNames.some(x=>x.toUpperCase()===name)){alert('Nama staff sudah ada.');return}
+  staffNames.push(name);
+  input.value='';
+  persistStaff();
+}
+function saveStaffChanges(){
+  const inputs=[...document.querySelectorAll('[data-staff-index]')];
+  const renameMap={};
+  const next=[];
+  for(const input of inputs){
+    const oldName=input.dataset.originalName;
+    const newName=input.value.trim().toUpperCase();
+    if(!newName) continue;
+    if(next.includes(newName)){alert(`Nama ${newName} terduplikasi. Gunakan nama yang berbeda.`);return}
+    next.push(newName);
+    if(oldName!==newName) renameMap[oldName]=newName;
+  }
+  staffNames=next;
+  if(Object.keys(renameMap).length){
+    records=records.map(r=>renameMap[r.name]?{...r,name:renameMap[r.name]}:r);
+    saveRecords();
+  }
+  persistStaff();
+  alert('Daftar nama staff berhasil disimpan.');
+}
+function persistStaff(){
+  saveStaffNames();
+  fillStaff();
+  renderStaffSettings();
+  renderAll();
+}
+window.removeStaff=index=>{
+  const name=staffNames[index];
+  if(!confirm(`Hapus ${name} dari daftar pilihan? Data laporan lama tidak ikut terhapus.`))return;
+  staffNames.splice(index,1);
+  persistStaff();
+}
+function monthRecords(){const y=viewDate.getFullYear(),m=viewDate.getMonth();return records.filter(r=>{const d=new Date(r.date+'T00:00:00');return d.getFullYear()===y&&d.getMonth()===m})}
+function periodRecords(start,end){return monthRecords().filter(r=>{const day=Number(r.date.slice(8,10));return day>=start&&day<=end})}
+function renderAll(){
+  el('monthLabel').textContent=monthName(viewDate);
+  const max=daysInMonth(viewDate.getFullYear(),viewDate.getMonth());
+  const mr=monthRecords(),p1=periodRecords(1,10),p2=periodRecords(11,20),p3=periodRecords(21,max);
+  el('statMonthly').textContent=money(mr.reduce((s,r)=>s+r.amount,0));
+  el('statP1').textContent=money(p1.reduce((s,r)=>s+r.amount,0));
+  el('statP2').textContent=money(p2.reduce((s,r)=>s+r.amount,0));
+  el('statP3').textContent=money(p3.reduce((s,r)=>s+r.amount,0));
+  el('monthly').innerHTML=summaryTable(mr,1,max);
+  el('p1').innerHTML=summaryTable(p1,1,10);
+  el('p2').innerHTML=summaryTable(p2,11,20);
+  el('p3').innerHTML=summaryTable(p3,21,max);
+  renderRecords(mr);
+}
+function summaryTable(data,start,end){
+  const dynamicNames=[...new Set([...staffNames,...data.map(r=>r.name)])].sort();
+  const days=[];for(let d=start;d<=end;d++)days.push(d);
+  let html='<div class="table-wrap"><table><thead><tr><th>NAMA STAFF</th>';
+  html+=days.map(d=>`<th>${String(d).padStart(2,'0')}/${String(viewDate.getMonth()+1).padStart(2,'0')}</th>`).join('');
+  html+='<th>TOTAL</th></tr></thead><tbody>';
+  for(const name of dynamicNames){
+    let total=0; html+=`<tr><td>${esc(name)}</td>`;
+    for(const day of days){
+      const val=data.filter(r=>r.name===name&&Number(r.date.slice(8,10))===day).reduce((s,r)=>s+r.amount,0);total+=val;
+      html+=`<td class="money">${val?new Intl.NumberFormat('id-ID').format(val):''}</td>`;
+    }
+    html+=`<td class="money">${new Intl.NumberFormat('id-ID').format(total)}</td></tr>`;
+  }
+  return html+'</tbody></table></div>';
+}
+function renderRecords(data){
+  if(!data.length){el('records').innerHTML='<div class="empty">Belum ada data pada bulan ini.</div>';return}
+  el('records').innerHTML=`<div class="table-wrap"><table class="record-table"><thead><tr><th>Tanggal</th><th>Nama</th><th>Keterangan</th><th>Bukti</th><th>Nominal</th><th>Aksi</th></tr></thead><tbody>${data.map(r=>`
+    <tr style="--cat:${categoryColor(r.category)}"><td>${r.date.split('-').reverse().join('/')}</td><td>${esc(r.name)}</td><td class="category-cell" style="background:${categoryColor(r.category)}"><span class="pill" style="background:${categoryColor(r.category)};color:${contrastText(categoryColor(r.category))}">${esc(r.category)}</span></td><td>${r.proof?`<a href="${esc(r.proof)}" target="_blank">Buka bukti</a>`:'-'}</td><td>${money(r.amount)}</td><td><button class="icon-btn" onclick="editRecord(${r.id})">Edit</button> <button class="icon-btn" onclick="deleteRecord(${r.id})">Hapus</button></td></tr>`).join('')}</tbody></table></div>`;
+}
+window.editRecord=id=>{const r=records.find(x=>x.id===id);if(!r)return;editingId=id;el('dateInput').value=r.date;el('nameInput').value=r.name;el('categoryInput').value=r.category;el('proofInput').value=r.proof;el('saveBtn').textContent='Update Data';el('editingBadge').textContent='MODE EDIT';updatePreview();window.scrollTo({top:0,behavior:'smooth'})}
+window.deleteRecord=id=>{if(!confirm('Hapus data ini?'))return;records=records.filter(r=>r.id!==id);saveRecords();renderAll()}
+function exportCSV(){
+  const data=monthRecords();const rows=[['Tanggal','Nama Staff','Keterangan','Bukti','Nominal'],...data.map(r=>[r.date,r.name,r.category,r.proof,r.amount])];
+  const csv=rows.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`rekap-mental-${viewDate.getFullYear()}-${String(viewDate.getMonth()+1).padStart(2,'0')}.csv`;a.click();URL.revokeObjectURL(a.href)
+}
+
+
+
+function configSudahDiisi(){
+  return firebaseConfig.apiKey && !firebaseConfig.apiKey.includes('MASUKKAN_') &&
+         firebaseConfig.projectId && !firebaseConfig.projectId.includes('MASUKKAN_') &&
+         firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('MASUKKAN_');
+}
+
+function setConnectionStatus(text, ok=false){
+  let badge=document.getElementById('firebaseStatus');
+  if(!badge){
+    badge=document.createElement('div');
+    badge.id='firebaseStatus';
+    badge.style.cssText='position:fixed;right:14px;bottom:14px;z-index:9999;padding:9px 13px;border-radius:999px;font:800 12px Inter,Arial,sans-serif;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,.25)';
+    document.body.appendChild(badge);
+  }
+  badge.textContent=text;
+  badge.style.background=ok?'#087443':'#b60000';
+}
+
+async function saveRecords(){
+  if(!firebaseReady) return;
+  try{ await set(ref(database, `${FIREBASE_PATH}/records`), records); }
+  catch(err){ console.error(err); alert('Gagal menyimpan data ke Firebase: '+err.message); }
+}
+async function saveCategories(){
+  if(!firebaseReady) return;
+  try{ await set(ref(database, `${FIREBASE_PATH}/categories`), categories); }
+  catch(err){ console.error(err); alert('Gagal menyimpan nominal ke Firebase: '+err.message); }
+}
+async function saveStaffNames(){
+  if(!firebaseReady) return;
+  try{ await set(ref(database, `${FIREBASE_PATH}/staffNames`), staffNames); }
+  catch(err){ console.error(err); alert('Gagal menyimpan nama staff ke Firebase: '+err.message); }
+}
+
+async function startFirebase(){
+  initUI();
+  if(!configSudahDiisi()){
+    setConnectionStatus('Firebase belum dikonfigurasi');
+    alert('Masukkan firebaseConfig terlebih dahulu pada bagian atas script HTML.');
+    return;
+  }
+  try{
+    const app=initializeApp(firebaseConfig);
+    database=getDatabase(app);
+    firebaseReady=true;
+    setConnectionStatus('Menghubungkan Firebase...');
+
+    onValue(ref(database, FIREBASE_PATH), async snapshot=>{
+      const data=snapshot.val();
+      if(data){
+        staffNames=Array.isArray(data.staffNames)?data.staffNames:[...INITIAL_STAFF];
+        categories=data.categories && typeof data.categories==='object'?data.categories:{...DEFAULT_CATEGORIES};
+        records=Array.isArray(data.records)?data.records:Object.values(data.records||{});
+      }else if(!receivedFirstSnapshot){
+        await set(ref(database, FIREBASE_PATH), {
+          staffNames:[...INITIAL_STAFF], categories:{...DEFAULT_CATEGORIES}, records:[]
+        });
+      }
+      receivedFirstSnapshot=true;
+      fillStaff(); fillCategories(); renderSettings(); renderStaffSettings(); renderAll();
+      setConnectionStatus('Firebase LIVE', true);
+    }, err=>{
+      console.error(err);
+      setConnectionStatus('Firebase gagal terhubung');
+      alert('Firebase gagal terhubung. Periksa databaseURL dan Rules: '+err.message);
+    });
+  }catch(err){
+    console.error(err);
+    setConnectionStatus('Konfigurasi Firebase salah');
+    alert('Konfigurasi Firebase salah: '+err.message);
+  }
+}
+
+startFirebase();
+</script>
+</body>
+</html>
