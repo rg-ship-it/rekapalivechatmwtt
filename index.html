@@ -595,10 +595,14 @@ function exportCSV(){
 
 
 
-function configSudahDiisi(){
-  return firebaseConfig.apiKey && !firebaseConfig.apiKey.includes('MASUKKAN_') &&
-         firebaseConfig.projectId && !firebaseConfig.projectId.includes('MASUKKAN_') &&
-         firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('MASUKKAN_');
+function configSudahDiisi() {
+  return Boolean(
+    firebaseConfig.apiKey &&
+    firebaseConfig.authDomain &&
+    firebaseConfig.databaseURL &&
+    firebaseConfig.projectId &&
+    firebaseConfig.appId
+  );
 }
 
 function setConnectionStatus(text, ok=false){
