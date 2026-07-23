@@ -191,6 +191,11 @@
     .record-table{width:100%;font-size:12px}
     .record-table th,.record-table td{position:static;min-width:auto;text-align:left}
     .record-table td:nth-child(5){text-align:right;color:#d00000;font-weight:900}
+    .amount-inline{
+      width:125px;min-width:110px;padding:7px 9px;border:1px solid #f1a7a7;
+      border-radius:8px;text-align:right;font-weight:900;color:#d00000;background:#fff;
+    }
+    .amount-inline:focus{border-color:#b60000;box-shadow:0 0 0 3px rgba(182,0,0,.12)}
     .pill{display:inline-block;padding:5px 9px;border-radius:999px;color:#111827;font-size:11px;font-weight:900;border:1px solid rgba(15,23,42,.14)}
     .category-cell{font-weight:900}
     .icon-btn{padding:6px 8px;border-radius:7px;background:#e5e7eb}
@@ -725,7 +730,20 @@ function summaryTable(data,start,end){
 function renderRecords(data){
   if(!data.length){el('records').innerHTML='<div class="empty">Belum ada data pada bulan ini.</div>';return}
   el('records').innerHTML=`<div class="table-wrap"><table class="record-table"><thead><tr><th>Tanggal</th><th>Nama</th><th>Keterangan</th><th>Bukti</th><th>Nominal</th><th>Aksi</th></tr></thead><tbody>${data.map(r=>`
-    <tr style="--cat:${categoryColor(r.category)}"><td>${r.date.split('-').reverse().join('/')}</td><td>${esc(r.name)}</td><td class="category-cell" style="background:${categoryColor(r.category)}"><span class="pill" style="background:${categoryColor(r.category)};color:${contrastText(categoryColor(r.category))}">${esc(r.category)}</span></td><td>${r.proof?`<a href="${esc(r.proof)}" target="_blank">Buka bukti</a>`:'-'}</td><td>${money(r.amount)}</td><td><button class="icon-btn" onclick="editRecord(${r.id})">Edit</button> <button class="icon-btn" onclick="deleteRecord(${r.id})">Hapus</button></td></tr>`).join('')}</tbody></table></div>`;
+    <tr style="--cat:${categoryColor(r.category)}"><td>${r.date.split('-').reverse().join('/')}</td><td>${esc(r.name)}</td><td class="category-cell" style="background:${categoryColor(r.category)}"><span class="pill" style="background:${categoryColor(r.category)};color:${contrastText(categoryColor(r.category))}">${esc(r.category)}</span></td><td>${r.proof?`<a href="${esc(r.proof)}" target="_blank">Buka bukti</a>`:'-'}</td><td><input class="amount-inline" type="text" inputmode="numeric" value="${new Intl.NumberFormat('id-ID').format(Number(r.amount)||0)}" oninput="formatAmountInput(this)" onblur="updateRecordAmount(${r.id},this.value)" onkeydown="if(event.key==='Enter'){this.blur()}"></td><td><button class="icon-btn" onclick="editRecord(${r.id})">Edit</button> <button class="icon-btn" onclick="deleteRecord(${r.id})">Hapus</button></td></tr>`).join('')}</tbody></table></div>`;
+}
+window.formatAmountInput=input=>{
+  const digits=String(input.value||'').replace(/\D/g,'');
+  input.value=digits?new Intl.NumberFormat('id-ID').format(Number(digits)):'';
+}
+window.updateRecordAmount=async(id,value)=>{
+  const cleanValue=String(value||'').replace(/\D/g,'');
+  const amount=Math.max(0,Number(cleanValue)||0);
+  const index=records.findIndex(r=>r.id===id);
+  if(index===-1)return;
+  records[index]={...records[index],amount};
+  await saveRecords();
+  renderAll();
 }
 window.editRecord=id=>{const r=records.find(x=>x.id===id);if(!r)return;editingId=id;el('dateInput').value=r.date;el('nameInput').value=r.name;el('categoryInput').value=r.category;el('proofInput').value=r.proof;el('saveBtn').textContent='Update Data';el('editingBadge').textContent='MODE EDIT';updatePreview();window.scrollTo({top:0,behavior:'smooth'})}
 window.deleteRecord=id=>{if(!confirm('Hapus data ini?'))return;records=records.filter(r=>r.id!==id);saveRecords();renderAll()}
