@@ -730,9 +730,51 @@ function renderRecords(data){
 window.editRecord=id=>{const r=records.find(x=>x.id===id);if(!r)return;editingId=id;el('dateInput').value=r.date;el('nameInput').value=r.name;el('categoryInput').value=r.category;el('proofInput').value=r.proof;el('saveBtn').textContent='Update Data';el('editingBadge').textContent='MODE EDIT';updatePreview();window.scrollTo({top:0,behavior:'smooth'})}
 window.deleteRecord=id=>{if(!confirm('Hapus data ini?'))return;records=records.filter(r=>r.id!==id);saveRecords();renderAll()}
 function exportCSV(){
-  const data=monthRecords();const rows=[['Tanggal','Nama Staff','Keterangan','Bukti','Nominal'],...data.map(r=>[r.date,r.name,r.category,r.proof,r.amount])];
-  const csv=rows.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
-  const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`rekap-mental-${viewDate.getFullYear()}-${String(viewDate.getMonth()+1).padStart(2,'0')}.csv`;a.click();URL.revokeObjectURL(a.href)
+  const data = monthRecords()
+    .slice()
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  if (!data.length) {
+    alert('Belum ada data untuk diekspor pada bulan ini.');
+    return;
+  }
+
+  const rows = [
+    ['Nama Staff', 'Nominal'],
+    ...data.map(r => [
+      r.name,
+      Number(r.amount || 0)
+    ])
+  ];
+
+  // Gunakan titik koma agar kolom langsung terbaca rapi di Excel.
+  const csv = [
+    'sep=;',
+    ...rows.map(row =>
+      row.map(value =>
+        `"${String(value).replace(/"/g, '""')}"`
+      ).join(';')
+    )
+  ].join('\r\n');
+
+  const blob = new Blob(
+    ['\ufeff' + csv],
+    { type: 'text/csv;charset=utf-8;' }
+  );
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+
+  link.href = url;
+  link.download =
+    `rekap-nama-nominal-${viewDate.getFullYear()}-${String(
+      viewDate.getMonth() + 1
+    ).padStart(2, '0')}.csv`;
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 }
 
 
