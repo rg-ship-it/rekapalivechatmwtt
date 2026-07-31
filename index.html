@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -190,7 +188,52 @@
 
     .record-table{width:100%;font-size:12px}
     .record-table th,.record-table td{position:static;min-width:auto;text-align:left}
-    .record-table td:nth-child(5){text-align:right;color:#d00000;font-weight:900}
+    .record-table th:first-child,.record-table td:first-child{width:72px;text-align:center;font-weight:900}
+    .record-table td:nth-child(6){text-align:right;color:#d00000;font-weight:900}
+    .name-total-badge{display:inline-block;margin-left:7px;padding:3px 7px;border-radius:999px;background:#991b1b;color:#fff;font-size:10px;font-weight:900;vertical-align:middle}
+    .record-table tr.name-group-start td{border-top:3px solid #991b1b}
+    .record-table tr.name-group-start:first-child td{border-top-width:1px}
+    .same-name-mark{
+      display:inline-block;
+      position:relative;
+      padding:4px 9px;
+      border-radius:999px;
+      overflow:hidden;
+      color:#7a123d;
+      font-size:10px;
+      font-style:italic;
+      font-weight:900;
+      letter-spacing:.25px;
+      border:1px solid rgba(255,182,213,.95);
+      background:
+        linear-gradient(120deg,rgba(255,255,255,.72),transparent 30%,rgba(255,255,255,.36) 52%,transparent 72%),
+        linear-gradient(135deg,#fff0f7 0%,#ffc7df 24%,#ff8fc1 48%,#ffd5e8 70%,#f472b6 100%);
+      background-size:220% 220%,100% 100%;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.95),
+        inset 0 -2px 5px rgba(190,24,93,.16),
+        0 2px 8px rgba(236,72,153,.28),
+        0 0 10px rgba(244,114,182,.22);
+      text-shadow:0 1px 0 rgba(255,255,255,.8),0 0 5px rgba(255,255,255,.65);
+      animation:pinkMetalFlow 3.8s ease-in-out infinite;
+    }
+    .same-name-mark::before{
+      content:'';
+      position:absolute;
+      inset:-80% -45%;
+      background:linear-gradient(105deg,transparent 42%,rgba(255,255,255,.95) 49%,rgba(255,255,255,.32) 54%,transparent 61%);
+      transform:translateX(-80%) rotate(5deg);
+      animation:pinkMetalShine 3.2s linear infinite;
+      pointer-events:none;
+    }
+    @keyframes pinkMetalFlow{
+      0%,100%{background-position:0% 50%,center}
+      50%{background-position:100% 50%,center}
+    }
+    @keyframes pinkMetalShine{
+      0%{transform:translateX(-85%) rotate(5deg)}
+      60%,100%{transform:translateX(90%) rotate(5deg)}
+    }
     .amount-inline{
       width:125px;min-width:110px;padding:7px 9px;border:1px solid #f1a7a7;
       border-radius:8px;text-align:right;font-weight:900;color:#d00000;background:#fff;
@@ -729,8 +772,41 @@ function summaryTable(data,start,end){
 }
 function renderRecords(data){
   if(!data.length){el('records').innerHTML='<div class="empty">Belum ada data pada bulan ini.</div>';return}
-  el('records').innerHTML=`<div class="table-wrap"><table class="record-table"><thead><tr><th>Tanggal</th><th>Nama</th><th>Keterangan</th><th>Bukti</th><th>Nominal</th><th>Aksi</th></tr></thead><tbody>${data.map(r=>`
-    <tr style="--cat:${categoryColor(r.category)}"><td>${r.date.split('-').reverse().join('/')}</td><td>${esc(r.name)}</td><td class="category-cell" style="background:${categoryColor(r.category)}"><span class="pill" style="background:${categoryColor(r.category)};color:${contrastText(categoryColor(r.category))}">${esc(r.category)}</span></td><td>${r.proof?`<a href="${esc(r.proof)}" target="_blank">Buka bukti</a>`:'-'}</td><td><input class="amount-inline" type="text" inputmode="numeric" value="${new Intl.NumberFormat('id-ID').format(Number(r.amount)||0)}" oninput="formatAmountInput(this)" onblur="updateRecordAmount(${r.id},this.value)" onkeydown="if(event.key==='Enter'){this.blur()}"></td><td><button class="icon-btn" onclick="editRecord(${r.id})">Edit</button> <button class="icon-btn" onclick="deleteRecord(${r.id})">Hapus</button></td></tr>`).join('')}</tbody></table></div>`;
+
+  // Kelompokkan nama staff yang sama agar tidak tampil acak.
+  // Urutan utama: Nama A-Z, lalu tanggal paling lama ke terbaru.
+  const sortedData = data.slice().sort((a,b)=>
+    String(a.name||'').localeCompare(String(b.name||''),'id',{sensitivity:'base'}) ||
+    String(a.date||'').localeCompare(String(b.date||'')) ||
+    Number(a.id||0)-Number(b.id||0)
+  );
+
+  // Hitung jumlah baris untuk setiap nama.
+  const totalByName = sortedData.reduce((acc,r)=>{
+    const name=String(r.name||'').trim().toUpperCase();
+    acc[name]=(acc[name]||0)+1;
+    return acc;
+  },{});
+
+  let lastName = '';
+  const rows = sortedData.map(r=>{
+    const currentName = String(r.name||'').trim().toUpperCase();
+    const isNewGroup = currentName !== lastName;
+    lastName = currentName;
+    const totalRows=totalByName[currentName]||0;
+
+    return `
+    <tr class="${isNewGroup?'name-group-start':''}" style="--cat:${categoryColor(r.category)}">
+      <td>${r.date.split('-').reverse().join('/')}</td>
+      <td>${isNewGroup?`<strong>${esc(currentName)}</strong><span class="name-total-badge">${totalRows} baris</span>`:'<span class="same-name-mark">↳ nama sama</span>'}</td>
+      <td class="category-cell" style="background:${categoryColor(r.category)}"><span class="pill" style="background:${categoryColor(r.category)};color:${contrastText(categoryColor(r.category))}">${esc(r.category)}</span></td>
+      <td>${r.proof?`<a href="${esc(r.proof)}" target="_blank">Buka bukti</a>`:'-'}</td>
+      <td><input class="amount-inline" type="text" inputmode="numeric" value="${new Intl.NumberFormat('id-ID').format(Number(r.amount)||0)}" oninput="formatAmountInput(this)" onblur="updateRecordAmount(${r.id},this.value)" onkeydown="if(event.key==='Enter'){this.blur()}"></td>
+      <td><button class="icon-btn" onclick="editRecord(${r.id})">Edit</button> <button class="icon-btn" onclick="deleteRecord(${r.id})">Hapus</button></td>
+    </tr>`;
+  }).join('');
+
+  el('records').innerHTML=`<div class="table-wrap"><table class="record-table"><thead><tr><th>Tanggal</th><th>Nama</th><th>Keterangan</th><th>Bukti</th><th>Nominal</th><th>Aksi</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 window.formatAmountInput=input=>{
   const digits=String(input.value||'').replace(/\D/g,'');
@@ -854,6 +930,11 @@ async function startFirebase(){
         staffNames=Array.isArray(data.staffNames)?data.staffNames:[...INITIAL_STAFF];
         categories=data.categories && typeof data.categories==='object'?data.categories:{...DEFAULT_CATEGORIES};
         records=Array.isArray(data.records)?data.records:Object.values(data.records||{});
+        records.sort((a,b)=>
+          String(a.name||'').localeCompare(String(b.name||''),'id',{sensitivity:'base'}) ||
+          String(a.date||'').localeCompare(String(b.date||'')) ||
+          Number(a.id||0)-Number(b.id||0)
+        );
       }else if(!receivedFirstSnapshot){
         await set(ref(database, FIREBASE_PATH), {
           staffNames:[...INITIAL_STAFF], categories:{...DEFAULT_CATEGORIES}, records:[]
