@@ -593,8 +593,8 @@ const DEFAULT_CATEGORIES = {
   'MENTAL':100000,
   'MISSCHAT':500000,
   'ASAL TUTUP CHAT TANPA MENYELESAIKAN KENDALA':200000,
-  'Asal-asal balas chat member':200000,
-  'Asal-asal reset member':5000000,
+  'ASAL-ASAL BALAS CHAT MEMBER':200000,
+  'ASAL-ASAL RESET MEMBER':5000000,
   'MISS SLOW RESPON BOT PATROL':500000,
   'TRANSFER CHAT':500000
 };
@@ -929,7 +929,11 @@ async function startFirebase(){
       const data=snapshot.val();
       if(data){
         staffNames=Array.isArray(data.staffNames)?data.staffNames:[...INITIAL_STAFF];
-        categories=data.categories && typeof data.categories==='object'?data.categories:{...DEFAULT_CATEGORIES};
+        const firebaseCategories = data.categories && typeof data.categories==='object' ? data.categories : {};
+        categories = {...DEFAULT_CATEGORIES, ...firebaseCategories};
+        if(!Object.prototype.hasOwnProperty.call(firebaseCategories,'ASAL-ASAL RESET MEMBER')){
+          await set(ref(database, `${FIREBASE_PATH}/categories`), categories);
+        }
         records=Array.isArray(data.records)?data.records:Object.values(data.records||{});
         records.sort((a,b)=>
           String(a.name||'').localeCompare(String(b.name||''),'id',{sensitivity:'base'}) ||
